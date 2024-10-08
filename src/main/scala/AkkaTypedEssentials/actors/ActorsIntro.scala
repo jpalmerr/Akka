@@ -4,11 +4,22 @@ import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.{ActorSystem, Behavior}
 
 object ActorsIntro {
+
   /**
    * Actors are uniquely identified
    * Messages are asynchronous
    * Each actor may respond differently
    */
+  // part 1: behavior
+  // [T](onMessage: T => Behavior[T]): Receive[T]
+  val simpleActorBehavior: Behavior[String] = Behaviors.receiveMessage { (message: String) =>
+    // do something with the message
+    println(s"[simple actor] I have received: $message")
+
+    // new behavior for the NEXT message: an actor can receive any number of messages -> you have to specify
+    // what behaviour the next message should be
+    Behaviors.same
+  }
 
   def demoSimpleActor(): Unit = {
     // part 2: instantiate
@@ -23,7 +34,7 @@ object ActorsIntro {
     actorSystem.terminate()
   }
 
-  // "refactor"
+  // "refactor" - typical way to instantiate
   object SimpleActor {
     def apply(): Behavior[String] = Behaviors.receiveMessage { (message: String) =>
       // do something with the message
