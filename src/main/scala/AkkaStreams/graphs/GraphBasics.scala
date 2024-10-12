@@ -2,7 +2,7 @@ package AkkaStreams.graphs
 
 import akka.NotUsed
 import akka.actor.ActorSystem
-import akka.stream.{ActorMaterializer, ClosedShape}
+import akka.stream.{ActorMaterializer, ClosedShape, FanInShape2, UniformFanOutShape}
 import akka.stream.scaladsl.{Balance, Broadcast, Flow, GraphDSL, Merge, RunnableGraph, Sink, Source, Zip}
 
 object GraphBasics extends App {
@@ -25,11 +25,11 @@ object GraphBasics extends App {
       import GraphDSL.Implicits._ // brings some nice operators into scope
 
       // step 2 - add the necessary components of this graph
-      val broadcast = builder.add(Broadcast[Int](2)) // fan-out operator
-      val zip = builder.add(Zip[Int, Int]) // fan-in operator
+      val broadcast: UniformFanOutShape[Int, Int] = builder.add(Broadcast[Int](2)) // fan-out operator (single input, 2 outputs)
+      val zip: FanInShape2[Int, Int, (Int, Int)] = builder.add(Zip[Int, Int]) // fan-in operator (2 inouts one output)
 
       // step 3 - tying up the components
-      input ~> broadcast
+      input ~> broadcast // input feeds into broadcast
 
       broadcast.out(0) ~> incrementer ~> zip.in0
       broadcast.out(1) ~> multiplier  ~> zip.in1
