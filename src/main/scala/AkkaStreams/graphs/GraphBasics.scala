@@ -16,6 +16,9 @@ object GraphBasics extends App {
   val multiplier = Flow[Int].map(x => x * 10) // hard computation
   val output = Sink.foreach[(Int, Int)](println)
 
+  // fan in -> multiple streams into one graph
+  // then fan out -> one graph into multiple outputs
+
   // step 1 - setting up the fundamentals for the graph
   val graph = RunnableGraph.fromGraph(
     GraphDSL.create() { implicit builder: GraphDSL.Builder[NotUsed] => // builder = MUTABLE data structure
