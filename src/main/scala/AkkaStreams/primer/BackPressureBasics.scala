@@ -30,14 +30,14 @@ object BackpressureBasics extends App {
 
   fastSource.async
     .via(simpleFlow).async
-    .to(slowSink)
+    .to(slowSink) // slow sink -> back pressure signals upstream because its slow -> buffers internally until default buffer (16)
   //    .run()
 
   /*
     reactions to backpressure (in order):
     - try to slow down if possible
     - buffer elements until there's more demand
-    - drop down elements from the buffer if it overflows
+    - drop down elements from the buffer if it overflows <- we can only control at this moment
     - tear down/kill the whole stream (failure)
    */
 
@@ -45,7 +45,7 @@ object BackpressureBasics extends App {
   fastSource.async
     .via(bufferedFlow).async
     .to(slowSink)
-    .run()
+//    .run()
 
   /*
     1-16: nobody is backpressured
@@ -66,5 +66,5 @@ object BackpressureBasics extends App {
 
   // throttling
   import scala.concurrent.duration._
-  fastSource.throttle(10, 1.second).runWith(Sink.foreach(println))
+  fastSource.throttle(10, 1.second).runWith(Sink.foreach(println)) // x elements per y seconds
 }
