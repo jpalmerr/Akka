@@ -75,6 +75,8 @@ object GraphBasics extends App {
    */
 
   import scala.concurrent.duration._
+  // Throttle the input streams to control the rate at which elements are processed.
+  // 'fastSource' emits 5 elements per second, while 'slowSource' emits 2 elements per second
   val fastSource = input.throttle(5, 1.second)
   val slowSource = input.throttle(2, 1.second)
 
@@ -95,6 +97,10 @@ object GraphBasics extends App {
 
 
       // step 2 -- declare components
+      /**
+       * Merge: Combines both input streams (fastSource and slowSource) into one.
+       * Balance: Distributes the merged stream evenly between two sinks (sink1 and sink2)
+       */
       val merge = builder.add(Merge[Int](2))
       val balance = builder.add(Balance[Int](2))
 
